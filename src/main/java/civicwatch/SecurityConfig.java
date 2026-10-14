@@ -1,4 +1,3 @@
-
 package civicwatch;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +18,7 @@ public class SecurityConfig {
     @Value("${civicwatch.admin.username:admin}")
     private String adminUsername;
 
-    @Value("${civicwatch.admin.password}")
+    @Value("${civicwatch.admin.password:}")
     private String adminPassword;
 
     @Bean
@@ -54,6 +53,11 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService(
             PasswordEncoder passwordEncoder) {
+
+        // Do not create a publicly guessable admin account if no password is configured.
+        if (adminPassword == null || adminPassword.isBlank()) {
+            return new InMemoryUserDetailsManager();
+        }
 
         UserDetails admin = User.withUsername(adminUsername)
             .password(passwordEncoder.encode(adminPassword))
