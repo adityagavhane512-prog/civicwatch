@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | CivicWatch</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f7f4;
+            color: #26352b;
+        }
+
+        header {
+            background: #176b45;
+            color: white;
+            padding: 22px 7%;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        header p {
+            margin-bottom: 0;
+        }
+
+        main {
+            max-width: 1300px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .top-bar p {
+            margin-bottom: 0;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .back-link,
+        .logout-button {
+            display: inline-block;
+            color: white;
+            padding: 11px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .back-link {
+            background: #176b45;
+        }
+
+        .logout-button {
+            background: #a83232;
+        }
+
+        .logout-button:hover {
+            background: #842525;
+        }
+
+        /* Dashboard summary cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px #00000010;
+            border-left: 5px solid #176b45;
+        }
+
+        .summary-card h3 {
+            margin: 0 0 12px;
+            font-size: 15px;
+            color: #66756a;
+            font-weight: normal;
+        }
+
+        .summary-card p {
+            margin: 0;
+            font-size: 32px;
+            font-weight: bold;
+            color: #176b45;
+        }
+
+        .summary-card.submitted {
+            border-left-color: #d99a19;
+        }
+
+        .summary-card.submitted p {
+            color: #a87308;
+        }
+
+        .summary-card.progress {
+            border-left-color: #287bc1;
+        }
+
+        .summary-card.progress p {
+            color: #287bc1;
+        }
+
+        .summary-card.resolved {
+            border-left-color: #26965b;
+        }
+
+        .summary-card.resolved p {
+            color: #26965b;
+        }
+
+        .message {
+            padding: 12px 16px;
+            margin-bottom: 18px;
+            border-radius: 6px;
+            background: #dff4e5;
+            color: #176b45;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px #00000010;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1050px;
+        }
+
+        th,
+        td {
+            padding: 14px;
+            text-align: left;
+            vertical-align: middle;
+            border-bottom: 1px solid #e4ebe6;
+        }
+
+        th {
+            background: #e1f0e6;
+            color: #176b45;
+        }
+
+        .complaint-photo {
+            width: 110px;
+            height: 85px;
+            object-fit: cover;
+            border-radius: 7px;
+            border: 1px solid #dce7e0;
+        }
+
+        .no-photo {
+            color: #78847c;
+            font-size: 13px;
+        }
+
+        select {
+            padding: 9px;
+            border: 1px solid #cbd8ce;
+            border-radius: 5px;
+            background: white;
+            margin-bottom: 8px;
+        }
+
+        button.update-button {
+            padding: 9px 13px;
+            background: #176b45;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button.update-button:hover {
+            background: #105335;
+        }
+
+        .empty {
+            text-align: center;
+            background: white;
+            padding: 35px;
+            border-radius: 10px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #66756a;
+        }
+
+        @media (max-width: 800px) {
+            .summary-cards {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 450px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-card {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>CivicWatch</h1>
+    <p>Admin Dashboard — Complaint Management</p>
+</header>
+
+<main>
+
+    <div class="top-bar">
+        <div>
+            <h2>Manage Complaints</h2>
+            <p>Review complaints, view photos and update progress.</p>
+        </div>
+
+        <div class="actions">
+            <a class="back-link" href="/">Home</a>
+
+            <form th:action="@{/logout}" method="post">
+                <button class="logout-button" type="submit">
+                    Logout
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard summary cards -->
+    <div class="summary-cards">
+
+        <div class="summary-card">
+            <h3>Total Complaints</h3>
+            <p th:text="${totalComplaints}">0</p>
+        </div>
+
+        <div class="summary-card submitted">
+            <h3>Submitted</h3>
+            <p th:text="${submittedCount}">0</p>
+        </div>
+
+        <div class="summary-card progress">
+            <h3>In Progress</h3>
+            <p th:text="${inProgressCount}">0</p>
+        </div>
+
+        <div class="summary-card resolved">
+            <h3>Resolved</h3>
+            <p th:text="${resolvedCount}">0</p>
+        </div>
+
+    </div>
+
+    <div class="message"
+         th:if="${message}"
+         th:text="${message}">
+    </div>
+
+    <div class="table-container"
+         th:if="${not #lists.isEmpty(complaints)}">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Location</th>
+                    <th>Date Submitted</th>
+                    <th>Photo</th>
+                    <th>Current Status</th>
+                    <th>Update Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="item : ${complaints}">
+
+                    <td th:text="${item.id}"></td>
+
+                    <td th:text="${item.category}"></td>
+
+                    <td th:text="${item.description}"></td>
+
+                    <td th:text="${item.location}"></td>
+
+                    <td th:text="${item.createdAt != null
+                        ? #temporals.format(item.createdAt, 'dd-MM-yyyy HH:mm')
+                        : 'N/A'}"></td>
+
+                    <td>
+                        <a th:if="${item.photoFilename != null
+                            and !#strings.isEmpty(item.photoFilename)}"
+                           th:href="@{/admin/photos/{filename}(filename=${item.photoFilename})}"
+                           target="_blank"
+                           rel="noopener noreferrer">
+
+                            <img class="complaint-photo"
+                                 th:src="@{/admin/photos/{filename}(filename=${item.photoFilename})}"
+                                 alt="Complaint photo">
+                        </a>
+
+                        <span class="no-photo"
+                              th:if="${item.photoFilename == null
+                                  or #strings.isEmpty(item.photoFilename)}">
+                            No photo
+                        </span>
+                    </td>
+
+                    <td th:text="${item.status}"></td>
+
+                    <td>
+                        <form th:action="@{/admin/update-status}"
+                              method="post">
+
+                            <input type="hidden"
+                                   name="id"
+                                   th:value="${item.id}">
+
+                            <select name="status" required>
+                                <option value="Submitted"
+                                    th:selected="${item.status == 'Submitted'}">
+                                    Submitted
+                                </option>
+
+                                <option value="In Progress"
+                                    th:selected="${item.status == 'In Progress'}">
+                                    In Progress
+                                </option>
+
+                                <option value="Resolved"
+                                    th:selected="${item.status == 'Resolved'}">
+                                    Resolved
+                                </option>
+                            </select>
+
+                            <button class="update-button" type="submit">
+                                Update
+                            </button>
+
+                        </form>
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="empty"
+         th:if="${#lists.isEmpty(complaints)}">
+
+        <h3>No complaints available</h3>
+        <p>Submitted complaints will appear here.</p>
+    </div>
+
+</main>
+
+<footer>
+    CivicWatch — Building cleaner and safer communities.
+</footer>
+
+</body>
+</html>

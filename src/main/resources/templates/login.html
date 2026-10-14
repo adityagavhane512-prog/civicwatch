@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Login | CivicWatch</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green: #147548;
+            --green-dark: #0d5735;
+            --green-light: #e8f5ed;
+            --text: #24352c;
+            --muted: #68776e;
+            --border: #dce7df;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--text);
+            background: linear-gradient(135deg, #edf6ef, #f7faf8);
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .brand {
+            margin-bottom: 22px;
+            text-align: center;
+        }
+
+        .brand-icon {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: var(--green);
+            color: white;
+            font-size: 31px;
+            font-weight: bold;
+            box-shadow: 0 5px 14px #14754830;
+        }
+
+        .brand h1 {
+            margin: 0;
+            color: var(--green-dark);
+            font-size: 29px;
+        }
+
+        .brand p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .login-box {
+            padding: 32px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: white;
+            box-shadow: 0 12px 35px #183b2810;
+        }
+
+        .login-box h2 {
+            margin: 0 0 7px;
+            font-size: 23px;
+            text-align: center;
+        }
+
+        .subtitle {
+            margin: 0 0 25px;
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .message {
+            margin: 0 0 17px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .error-message {
+            border: 1px solid #f0caca;
+            background: #fff0f0;
+            color: #a83232;
+        }
+
+        .logout-message {
+            border: 1px solid #b7e1c4;
+            background: #e8f8ed;
+            color: #176638;
+        }
+
+        .field {
+            margin-bottom: 19px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            color: #34483a;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        input {
+            display: block;
+            width: 100%;
+            min-height: 46px;
+            padding: 12px 13px;
+            border: 1px solid #cbd8cf;
+            border-radius: 8px;
+            background: white;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px #14754818;
+        }
+
+        input::placeholder {
+            color: #9aa79e;
+        }
+
+        button {
+            width: 100%;
+            min-height: 47px;
+            margin-top: 5px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: var(--green);
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: var(--green-dark);
+        }
+
+        .security-note {
+            margin: 19px 0 0;
+            padding: 12px;
+            border-radius: 8px;
+            background: #f5f9f6;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .home-link {
+            display: block;
+            margin-top: 23px;
+            color: var(--green);
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .home-link:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            margin-top: 24px;
+            color: var(--muted);
+            font-size: 11px;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 18px;
+            }
+
+            .login-box {
+                padding: 25px 20px;
+            }
+
+            .brand h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-wrapper">
+
+    <div class="brand">
+        <div class="brand-icon" aria-hidden="true">C</div>
+        <h1>CivicWatch</h1>
+        <p>Building cleaner and safer communities</p>
+    </div>
+
+    <main class="login-box">
+
+        <h2>Administrator Login</h2>
+
+        <p class="subtitle">
+            Sign in to manage citizen complaints and monitor their progress.
+        </p>
+
+        <div class="message error-message"
+             th:if="${param.error}"
+             role="alert">
+            Incorrect username or password. Please try again.
+        </div>
+
+        <div class="message logout-message"
+             th:if="${param.logout}"
+             role="status">
+            You have been logged out successfully.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+
+            <div class="field">
+                <label for="username">Username</label>
+
+                <input type="text"
+                       id="username"
+                       name="username"
+                       placeholder="Enter admin username"
+                       autocomplete="username"
+                       required
+                       autofocus>
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+
+                <input type="password"
+                       id="password"
+                       name="password"
+                       placeholder="Enter your password"
+                       autocomplete="current-password"
+                       required>
+            </div>
+
+            <button type="submit">Sign In →</button>
+
+        </form>
+
+        <div class="security-note">
+            Administrator access only. Please keep your login credentials private.
+        </div>
+
+    </main>
+
+    <a class="home-link" th:href="@{/}">
+        ← Return to CivicWatch Home
+    </a>
+
+    <footer>
+        CivicWatch — Complaint Management Portal
+    </footer>
+
+</div>
+
+</body>
+</html>

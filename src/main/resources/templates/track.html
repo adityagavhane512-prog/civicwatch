@@ -1,0 +1,636 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head> 
+<link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Complaint | CivicWatch</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green: #147548;
+            --green-dark: #0d5735;
+            --green-light: #e8f5ed;
+            --text: #24352c;
+            --muted: #68776e;
+            --border: #dce7df;
+            --white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f8f5;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar {
+            max-width: 1100px;
+            margin: auto;
+            padding: 17px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: var(--green-light);
+            color: var(--green);
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .brand h1 {
+            margin: 0;
+            color: var(--green-dark);
+            font-size: 23px;
+            line-height: 1.3;
+        }
+
+        .brand p {
+            margin: 2px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .home-nav {
+            padding: 9px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--green);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .home-nav:hover {
+            background: var(--green-light);
+        }
+
+        .hero {
+            padding: 38px 20px 70px;
+            background: linear-gradient(125deg, #105c3a, #198354);
+            color: white;
+        }
+
+        .hero-inner {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        .hero-label {
+            display: inline-block;
+            padding: 5px 12px;
+            border: 1px solid #ffffff35;
+            border-radius: 25px;
+            background: #ffffff1c;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h2 {
+            margin: 15px 0 8px;
+            font-size: clamp(28px, 4vw, 38px);
+            line-height: 1.25;
+        }
+
+        .hero p {
+            margin: 0;
+            max-width: 600px;
+            color: #e2f3e8;
+            font-size: 15px;
+        }
+
+        main {
+            max-width: 900px;
+            margin: -35px auto 0;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        .card {
+            padding: 30px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: white;
+            box-shadow: 0 8px 28px #183b2810;
+        }
+
+        .card > h3 {
+            margin: 0 0 6px;
+            font-size: 22px;
+        }
+
+        .intro {
+            margin: 0 0 23px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            width: 100%;
+            min-width: 0;
+            padding: 13px 14px;
+            border: 1px solid #cbd8cf;
+            border-radius: 8px;
+            background: white;
+            color: var(--text);
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px #14754818;
+        }
+
+        input::placeholder {
+            color: #9aa79e;
+        }
+
+        button {
+            flex-shrink: 0;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background: var(--green);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: var(--green-dark);
+        }
+
+        .help-text {
+            margin: 9px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .error {
+            margin-top: 20px;
+            padding: 13px 15px;
+            border: 1px solid #f2c5c5;
+            border-radius: 8px;
+            background: #fff0f0;
+            color: #a83232;
+            overflow-wrap: anywhere;
+        }
+
+        /* Complaint result */
+        .result {
+            margin-top: 25px;
+            padding: 23px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #fbfdfb;
+            overflow-wrap: anywhere;
+        }
+
+        .result-heading {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .result-heading h3 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .result-heading p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* Dynamic status badges */
+        .status {
+            display: inline-block;
+            padding: 7px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid transparent;
+        }
+
+        .status-submitted {
+            background: #fff4d6;
+            color: #8a5a00;
+            border-color: #f0d58a;
+        }
+
+        .status-progress {
+            background: #e4efff;
+            color: #1d4f91;
+            border-color: #b8d1fa;
+        }
+
+        .status-resolved {
+            background: #e1f7e8;
+            color: #176b38;
+            border-color: #a9dfba;
+        }
+
+        /* Complaint progress tracker */
+        .progress-tracker {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin: 10px 0 25px;
+            padding: 18px 12px;
+            background: #f7faf8;
+            border: 1px solid #e5eee7;
+            border-radius: 12px;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            color: #87938b;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .progress-dot {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e3e9e5;
+            color: #65736a;
+            font-size: 12px;
+        }
+
+        .progress-step.completed {
+            color: #147548;
+        }
+
+        .progress-step.completed .progress-dot {
+            background: #147548;
+            color: white;
+        }
+
+        .progress-line {
+            height: 3px;
+            flex: 1;
+            min-width: 12px;
+            margin-top: -20px;
+            background: #e0e7e2;
+            border-radius: 4px;
+        }
+
+        .progress-line.completed-line {
+            background: #147548;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 24px;
+        }
+
+        .detail {
+            padding: 14px 0;
+            margin: 0;
+            border-bottom: 1px solid #e8eee9;
+        }
+
+        .detail-label {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .detail-value {
+            display: block;
+            color: var(--text);
+            font-size: 14px;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+            white-space: pre-wrap;
+        }
+
+        .description-detail {
+            grid-column: 1 / -1;
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 24px;
+            color: var(--green);
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .home-link:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            margin-top: 45px;
+            padding: 24px;
+            border-top: 1px solid var(--border);
+            background: white;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 3px 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        footer strong {
+            color: var(--green-dark);
+        }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 14px 16px;
+            }
+
+            .brand h1 {
+                font-size: 20px;
+            }
+
+            .brand-icon {
+                width: 38px;
+                height: 38px;
+            }
+
+            .home-nav {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .hero {
+                padding: 30px 18px 60px;
+            }
+
+            main {
+                padding: 0 14px;
+            }
+
+            .card {
+                padding: 22px 17px;
+            }
+
+            .input-row {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+                padding: 13px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .description-detail {
+                grid-column: auto;
+            }
+
+            .result {
+                padding: 18px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .progress-tracker {
+                gap: 4px;
+                padding: 14px 6px;
+            }
+
+            .progress-step {
+                min-width: 52px;
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar">
+        <div class="brand">
+            <div class="brand-icon" aria-hidden="true">C</div>
+            <div>
+                <h1>CivicWatch</h1>
+                <p>Better communities start with us</p>
+            </div>
+        </div>
+
+        <a class="home-nav" th:href="@{/}">
+            ← Home
+        </a>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-inner">
+        <span class="hero-label">COMPLAINT TRACKING</span>
+        <h2>Stay informed about your complaint.</h2>
+        <p>
+            Enter your complaint ID to view its details and the latest
+            status recorded by the CivicWatch administration.
+        </p>
+    </div>
+</section>
+
+<main>
+    <section class="card">
+
+        <h3>Track Complaint Status</h3>
+        <p class="intro">
+            Use the complaint ID provided when you submitted your report.
+        </p>
+
+        <form th:action="@{/track}" method="post">
+            <label for="complaintId">Complaint ID</label>
+
+            <div class="input-row">
+                <input
+                    id="complaintId"
+                    type="number"
+                    name="complaintId"
+                    min="1"
+                    step="1"
+                    placeholder="Enter your complaint ID"
+                    required>
+
+                <button type="submit">Check Status →</button>
+            </div>
+
+            <p class="help-text">
+                Enter the numeric ID from your complaint submission confirmation.
+            </p>
+        </form>
+
+        <div class="error"
+             th:if="${error}"
+             th:text="${error}"
+             role="alert"
+             aria-live="polite">
+        </div>
+
+        <section class="result" th:if="${complaint}">
+
+            <div class="result-heading">
+                <div>
+                    <h3>Complaint Details</h3>
+                    <p>Information associated with your complaint ID.</p>
+                </div>
+
+                <span class="status"
+                      th:classappend="${complaint.status == 'Resolved'} ? ' status-resolved' : (${complaint.status == 'In Progress'} ? ' status-progress' : ' status-submitted')"
+                      th:text="${complaint.status}">
+                    Submitted
+                </span>
+            </div>
+
+            <!-- Progress tracker -->
+            <div class="progress-tracker"
+                 th:if="${complaint.status == 'Submitted'
+                      or complaint.status == 'In Progress'
+                      or complaint.status == 'Resolved'}">
+
+                <div class="progress-step completed">
+                    <span class="progress-dot">1</span>
+                    <span>Submitted</span>
+                </div>
+
+                <div class="progress-line"
+                     th:classappend="${complaint.status == 'In Progress'
+                          or complaint.status == 'Resolved'} ? ' completed-line' : ''">
+                </div>
+
+                <div class="progress-step"
+                     th:classappend="${complaint.status == 'In Progress'
+                          or complaint.status == 'Resolved'} ? ' completed' : ''">
+                    <span class="progress-dot">2</span>
+                    <span>In Progress</span>
+                </div>
+
+                <div class="progress-line"
+                     th:classappend="${complaint.status == 'Resolved'} ? ' completed-line' : ''">
+                </div>
+
+                <div class="progress-step"
+                     th:classappend="${complaint.status == 'Resolved'} ? ' completed' : ''">
+                    <span class="progress-dot">3</span>
+                    <span>Resolved</span>
+                </div>
+
+            </div>
+
+            <div class="details-grid">
+
+                <p class="detail">
+                    <span class="detail-label">Complaint ID</span>
+                    <span class="detail-value"
+                          th:text="${complaint.id}"></span>
+                </p>
+
+                <p class="detail">
+                    <span class="detail-label">Problem Category</span>
+                    <span class="detail-value"
+                          th:text="${complaint.category}"></span>
+                </p>
+
+                <p class="detail description-detail">
+                    <span class="detail-label">Problem Description</span>
+                    <span class="detail-value"
+                          th:text="${complaint.description}"></span>
+                </p>
+
+                <p class="detail">
+                    <span class="detail-label">Location</span>
+                    <span class="detail-value"
+                          th:text="${complaint.location}"></span>
+                </p>
+
+                <p class="detail">
+                    <span class="detail-label">Date Submitted</span>
+                    <span class="detail-value"
+                          th:text="${complaint.createdAt != null
+                              ? #temporals.format(complaint.createdAt, 'dd-MM-yyyy HH:mm')
+                              : 'N/A'}"></span>
+                </p>
+
+            </div>
+
+        </section>
+
+        <a class="home-link" th:href="@{/}">
+            ← Return to CivicWatch Home
+        </a>
+
+    </section>
+</main>
+
+<footer>
+    <p><strong>CivicWatch</strong> — Building cleaner and safer communities.</p>
+    <p>A citizen-focused platform for reporting and tracking public problems.</p>
+</footer>
+
+</body>
+</html>
